@@ -14,7 +14,9 @@ npm run dev
 curl http://localhost:3000/
 ```
 - HTTP status: `200`
-- Body: `AgentClinic is open for business`
+- `Content-Type` header includes `text/html`
+- Body contains `<h1>` with the clinic name
+- Body contains the strapline text
 
 ### 3. TypeScript build passes
 ```

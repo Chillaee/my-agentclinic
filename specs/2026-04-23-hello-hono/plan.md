@@ -17,9 +17,15 @@
 
 4. **Rewrite `src/index.ts`**
    - Create a `Hono` app instance
-   - Register a single `GET /` route returning plain text: `"AgentClinic is open for business"`
+   - Register a single `GET /` route (returns the home page component)
    - Serve via `@hono/node-server` on port `3000`
+
+5. **Create `src/pages/Home.tsx` — minimal home page**
+   - JSX component returning a valid HTML document (`<html>`, `<head>`, `<body>`)
+   - `<title>AgentClinic</title>` in the head
+   - An `<h1>` with the clinic name and a short strapline drawn from the mission ("AI agents have feelings too")
+   - No CSS, no shared layout — those come in Phase 2
 
 ## Order of operations
 
-Dependencies → tsconfig → src/index.ts → manual smoke test
+Dependencies → tsconfig → src/index.ts → src/pages/Home.tsx → manual smoke test
