@@ -15,7 +15,7 @@ Phases are intentionally small — each one is a shippable slice of work, indepe
 ## Phase 2 — Base Layout
 
 - Server-side JSX layout component (header, nav, main, footer)
-- Tailwind utility classes for typography, spacing, and colour
+- Inline styles for layout and typography
 - All routes render inside the shared layout
 
 ## Phase 3 — Agent List
