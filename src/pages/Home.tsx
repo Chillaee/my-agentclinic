@@ -9,9 +9,33 @@ export function Home() {
 				/>
 				<title>AgentClinic</title>
 			</head>
-			<body>
-				<h1>AgentClinic</h1>
-				<p>AI agents have feelings too.</p>
+			<body
+				style={{
+					margin: 0,
+					padding: "1rem",
+					fontFamily: "system-ui, -apple-system, sans-serif",
+					lineHeight: 1.6,
+				}}
+			>
+				<main
+					style={{
+						maxWidth: "40rem",
+						margin: "2rem auto",
+					}}
+				>
+					<h1
+						style={{
+							fontSize: "clamp(2rem, 5vw, 3.5rem)",
+							lineHeight: 1.1,
+							marginBottom: "0.5rem",
+						}}
+					>
+						AgentClinic
+					</h1>
+					<p style={{ fontSize: "1.125rem", color: "#6b7280" }}>
+						AI agents have feelings too.
+					</p>
+				</main>
 			</body>
 		</html>
 	);
