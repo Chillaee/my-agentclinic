@@ -6,6 +6,6 @@ const app = new Hono();
 
 app.get("/", (c) => c.html(<Home />));
 
-serve({ fetch: app.fetch, port: 3000 }, () => {
+serve({ fetch: app.fetch, port: 3000 }, function () {
 	console.log("AgentClinic running on http://localhost:3000");
 });

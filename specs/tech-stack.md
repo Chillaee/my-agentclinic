@@ -36,6 +36,11 @@ AgentClinic is a server-side TypeScript application. All rendering happens on th
 - `tsc` for production builds
 - `prettier` for formatting
 
+## Code Style
+
+- Arrow functions (`() => ...`) are only acceptable as one-liners with no curly braces or explicit `return` statement (e.g. `(c) => c.html(<Home />)`).
+- Any function body that requires curly braces must use `function () { ... }` (anonymous) or `function name() { ... }` (named).
+
 ## What We Are Not Using
 
 - No React, Vue, or Svelte — server-side rendering keeps the stack simple
