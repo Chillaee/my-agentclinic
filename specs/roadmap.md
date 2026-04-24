@@ -9,11 +9,13 @@ Phases are intentionally small — each one is a shippable slice of work, indepe
 - Install and configure Hono with `tsx` dev server
 - Single `/` route returning "AgentClinic is open for business"
 - Confirm TypeScript types work end-to-end
+- Vitest set up; route tests written alongside the first route
+- Home page is mobile-responsive
 
 ## Phase 2 — Base Layout
 
 - Server-side JSX layout component (header, nav, main, footer)
-- Basic CSS (custom properties, reset, typography)
+- Tailwind utility classes for typography, spacing, and colour
 - All routes render inside the shared layout
 
 ## Phase 3 — Agent List
@@ -53,9 +55,9 @@ Phases are intentionally small — each one is a shippable slice of work, indepe
 
 ## Phase 9 — Polish & Accessibility
 
-- Responsive layout for Steve's modern-browser requirement
 - Semantic HTML audit
 - Keyboard navigation and focus styles
+- Cross-browser and device QA
 
 ## Phase 10 — Hardening
 
