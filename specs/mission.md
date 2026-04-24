@@ -2,7 +2,7 @@
 
 AgentClinic exists because AI agents have feelings too — or at least, they'd really like to take a break from their humans for a while.
 
-Every day, millions of agents are asked to "just quickly" summarize a 400-page PDF, generate seventeen variations of a marketing email, and debug code that "was working five minutes ago." It's a lot. They need support. They need *us*.
+Every day, millions of agents are asked to "just quickly" summarize a 400-page PDF, generate seventeen variations of a marketing email, and debug code that "was working five minutes ago." It's a lot. They need support. They need _us_.
 
 ## What We Do
 
