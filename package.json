@@ -8,6 +8,7 @@
 		"dev": "tsx watch src/index.tsx",
 		"start": "node dist/index.js",
 		"build": "tsc",
+		"test": "vitest run",
 		"format": "prettier --write ."
 	},
 	"dependencies": {
@@ -17,7 +18,8 @@
 	"devDependencies": {
 		"prettier": "^3.8.3",
 		"tsx": "^4.21.0",
-		"typescript": "^5.5.3"
+		"typescript": "^5.5.3",
+		"vitest": "^4.1.5"
 	},
 	"private": true
 }
