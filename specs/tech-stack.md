@@ -4,13 +4,13 @@ AgentClinic is a server-side TypeScript application. All rendering happens on th
 
 ## Core
 
-| Layer | Choice | Rationale |
-|---|---|---|
-| Language | TypeScript | Type safety end-to-end; satisfies Mary's requirement |
-| Runtime | Node.js | Stable, well-supported, vast ecosystem |
-| Server framework | **Hono** | Lightweight, TypeScript-first, fast, excellent DX; routes and middleware feel natural |
-| Templating | Hono JSX (server-side) | JSX without React overhead; components are just functions |
-| CSS | Plain CSS + CSS custom properties | No build step required; Steve gets a modern, attractive result |
+| Layer            | Choice                            | Rationale                                                                             |
+| ---------------- | --------------------------------- | ------------------------------------------------------------------------------------- |
+| Language         | TypeScript                        | Type safety end-to-end; satisfies Mary's requirement                                  |
+| Runtime          | Node.js                           | Stable, well-supported, vast ecosystem                                                |
+| Server framework | **Hono**                          | Lightweight, TypeScript-first, fast, excellent DX; routes and middleware feel natural |
+| Templating       | Hono JSX (server-side)            | JSX without React overhead; components are just functions                             |
+| CSS              | Plain CSS + CSS custom properties | No build step required; Steve gets a modern, attractive result                        |
 
 ## Recommended: Hono
 
@@ -35,6 +35,11 @@ AgentClinic is a server-side TypeScript application. All rendering happens on th
 - `tsx` for development (run TypeScript directly, no build step needed)
 - `tsc` for production builds
 - `prettier` for formatting
+
+## Code Style
+
+- Arrow functions (`() => ...`) are only acceptable as one-liners with no curly braces or explicit `return` statement (e.g. `(c) => c.html(<Home />)`).
+- Any function body that requires curly braces must use `function () { ... }` (anonymous) or `function name() { ... }` (named).
 
 ## What We Are Not Using
 

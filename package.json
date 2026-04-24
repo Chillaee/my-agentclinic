@@ -1,14 +1,23 @@
 {
-  "name": "agentclinic",
-  "version": "1.0.0",
-  "description": "",
-  "main": "dist/index.js",
-  "scripts": {
-    "build": "tsc"
-  },
-  "dependencies": {},
-  "devDependencies": {
-    "typescript": "^5.5.3"
-  },
-  "private": true
+	"name": "agentclinic",
+	"version": "1.0.0",
+	"description": "",
+	"main": "dist/index.js",
+	"type": "module",
+	"scripts": {
+		"dev": "tsx watch src/index.tsx",
+		"start": "node dist/index.js",
+		"build": "tsc",
+		"format": "prettier --write ."
+	},
+	"dependencies": {
+		"@hono/node-server": "^2.0.0",
+		"hono": "^4.12.14"
+	},
+	"devDependencies": {
+		"prettier": "^3.8.3",
+		"tsx": "^4.21.0",
+		"typescript": "^5.5.3"
+	},
+	"private": true
 }
