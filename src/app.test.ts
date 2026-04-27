@@ -18,4 +18,36 @@ describe("GET /", function () {
 		const body = await res.text();
 		expect(body).toContain("AI agents have feelings too.");
 	});
+
+	it("renders a header element", async function () {
+		const res = await app.request("/");
+		const body = await res.text();
+		expect(body).toContain("<header");
+	});
+
+	it("renders a nav element", async function () {
+		const res = await app.request("/");
+		const body = await res.text();
+		expect(body).toContain("<nav");
+	});
+
+	it("renders a footer element", async function () {
+		const res = await app.request("/");
+		const body = await res.text();
+		expect(body).toContain("<footer");
+	});
+
+	it("nav contains links to all top-level routes", async function () {
+		const res = await app.request("/");
+		const body = await res.text();
+		expect(body).toContain('href="/agents"');
+		expect(body).toContain('href="/ailments"');
+		expect(body).toContain('href="/therapies"');
+	});
+
+	it("page content is wrapped in a main element", async function () {
+		const res = await app.request("/");
+		const body = await res.text();
+		expect(body).toContain("<main");
+	});
 });
