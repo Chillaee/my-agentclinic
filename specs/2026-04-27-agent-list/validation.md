@@ -11,7 +11,7 @@ The implementation is complete and ready to merge when all of the following are 
 
 ## Database correctness
 
-- `agentclinic.db` is created on first run and ignored by git (`.gitignore` entry)
+- `database/agentclinic.db` is created on first run; the `database/` directory is gitignored
 - `migrations` tracking table exists and contains one row for `001_create_agents.sql`
 - `agents` table has columns: `id`, `name`, `model_type`, `status`, `created_at`, `modified_at`
 - Running `src/index.tsx` twice does not duplicate seed rows

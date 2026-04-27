@@ -8,7 +8,7 @@ Introduce the SQLite database, the first migration, seed data, and an `/agents` 
 
 ### Database layer
 
-- `src/db/database.ts` — opens and exports a single `better-sqlite3` connection
+- `src/db/database.ts` — opens and exports a single `better-sqlite3` connection; database file lives at `database/agentclinic.db` (directory created automatically; gitignored)
 - `migrations/001_create_agents.sql` — creates the `agents` table
 - `src/db/migrate.ts` — reads and applies SQL migration files in order; safe to re-run (skips already-applied migrations via a `migrations` tracking table)
 - `src/db/seed.ts` — inserts whimsical fictional agents if the table is empty
