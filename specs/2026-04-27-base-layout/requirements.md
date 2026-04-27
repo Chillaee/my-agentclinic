@@ -6,12 +6,10 @@ Introduce a shared `Layout` component that owns the full HTML document shell and
 
 ## What Is Being Built
 
-- `src/components/Layout.tsx` — wraps every page in the HTML shell plus shared chrome
-  - Full `<html>/<head>/<body>` document structure (moved out of `Home.tsx`)
-  - `<header>` with AgentClinic site branding
-  - `<nav>` with stub links: Home (`/`), Agents (`/agents`), Ailments (`/ailments`), Therapies (`/therapies`)
-  - `<main>{children}</main>` — page content slot
-  - `<footer>` with the tagline "AI agents have feelings too."
+- `src/components/Header.tsx` — site branding / logo link
+- `src/components/Nav.tsx` — navigation links: Home (`/`), Agents (`/agents`), Ailments (`/ailments`), Therapies (`/therapies`)
+- `src/components/Footer.tsx` — tagline "AI agents have feelings too."
+- `src/components/Layout.tsx` — composes Header, Nav, Footer and the HTML document shell; wraps page content in `<main>{children}</main>`
 - `Home.tsx` becomes a thin page component: `<Layout><App /></Layout>`
 - `App.tsx` loses its `<main>` wrapper — `Layout` now owns `<main>`
 
@@ -26,6 +24,7 @@ Introduce a shared `Layout` component that owns the full HTML document shell and
 | Decision | Choice | Reason |
 |----------|--------|--------|
 | Layout pattern | Children prop (`<Layout>{children}</Layout>`) | Clean separation — pages own content, Layout owns chrome |
+| Chrome components | Header, Nav, Footer each in their own file | Each piece can evolve independently without touching Layout |
 | `<main>` ownership | Moved into Layout | Avoids nested `<main>` elements; keeps semantic HTML correct |
 | Nav links | Stub all top-level routes now | Establishes the full nav structure early; avoids rework each phase |
 | Styling | Inline JSX styles | Consistent with tech-stack decision; no build step |

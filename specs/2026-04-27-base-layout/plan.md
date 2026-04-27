@@ -1,21 +1,24 @@
 # Plan — Phase 2: Base Layout
 
-## 1. Create `Layout` component
+## 1. Create chrome components
+
+- `src/components/Header.tsx` — renders `<header>` with AgentClinic branding link
+- `src/components/Nav.tsx` — renders `<nav>` with links to `/`, `/agents`, `/ailments`, `/therapies`
+- `src/components/Footer.tsx` — renders `<footer>` with tagline "AI agents have feelings too."
+
+## 2. Create `Layout` component
 
 - Create `src/components/Layout.tsx`
-- Accept a `children` prop (Hono JSX `FC` with `{ children: Child }`)
+- Accept a `children` prop (`PropsWithChildren` from `hono/jsx`)
 - Render the full document shell: `<html>`, `<head>` (charset, viewport, title), `<body>`
-- `<header>` — site name "AgentClinic" with inline styles
-- `<nav>` — links to `/`, `/agents`, `/ailments`, `/therapies` with inline styles
-- `<main>{children}</main>` — page content slot with inline styles
-- `<footer>` — tagline "AI agents have feelings too." with inline styles
+- Compose `<Header />`, `<Nav />`, `<main>{children}</main>`, `<Footer />` inside `<body>`
 
-## 2. Update existing components
+## 3. Update existing components
 
 - `Home.tsx` — replace full document markup with `<Layout><App /></Layout>`; remove all html/head/body/style markup from this file
 - `App.tsx` — remove the `<main>` wrapper; render content directly (Layout now owns `<main>`)
 
-## 3. Write tests
+## 4. Write tests
 
 - Add tests in `src/app.test.ts` (or a new `src/components/Layout.test.tsx`) covering:
   - Response for `/` contains `<header>`
@@ -24,7 +27,7 @@
   - Nav contains links to `/agents`, `/ailments`, `/therapies`
   - Page content still renders inside `<main>`
 
-## 4. Smoke test
+## 5. Smoke test
 
 - Run the dev server (`npm run dev` or `tsx src/index.tsx`)
 - Visit `http://localhost:3000` and confirm header, nav, content, and footer all appear
