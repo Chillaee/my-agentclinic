@@ -21,13 +21,13 @@ Introduce a shared `Layout` component that owns the full HTML document shell and
 
 ## Decisions
 
-| Decision | Choice | Reason |
-|----------|--------|--------|
-| Layout pattern | Children prop (`<Layout>{children}</Layout>`) | Clean separation — pages own content, Layout owns chrome |
-| Chrome components | Header, Nav, Footer each in their own file | Each piece can evolve independently without touching Layout |
-| `<main>` ownership | Moved into Layout | Avoids nested `<main>` elements; keeps semantic HTML correct |
-| Nav links | Stub all top-level routes now | Establishes the full nav structure early; avoids rework each phase |
-| Styling | Inline JSX styles | Consistent with tech-stack decision; no build step |
+| Decision           | Choice                                        | Reason                                                             |
+| ------------------ | --------------------------------------------- | ------------------------------------------------------------------ |
+| Layout pattern     | Children prop (`<Layout>{children}</Layout>`) | Clean separation — pages own content, Layout owns chrome           |
+| Chrome components  | Header, Nav, Footer each in their own file    | Each piece can evolve independently without touching Layout        |
+| `<main>` ownership | Moved into Layout                             | Avoids nested `<main>` elements; keeps semantic HTML correct       |
+| Nav links          | Stub all top-level routes now                 | Establishes the full nav structure early; avoids rework each phase |
+| Styling            | Inline JSX styles                             | Consistent with tech-stack decision; no build step                 |
 
 ## Context
 

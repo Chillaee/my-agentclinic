@@ -21,11 +21,11 @@
 ## 4. Write tests
 
 - Add tests in `src/app.test.ts` (or a new `src/components/Layout.test.tsx`) covering:
-  - Response for `/` contains `<header>`
-  - Response for `/` contains `<nav>`
-  - Response for `/` contains `<footer>`
-  - Nav contains links to `/agents`, `/ailments`, `/therapies`
-  - Page content still renders inside `<main>`
+    - Response for `/` contains `<header>`
+    - Response for `/` contains `<nav>`
+    - Response for `/` contains `<footer>`
+    - Nav contains links to `/agents`, `/ailments`, `/therapies`
+    - Page content still renders inside `<main>`
 
 ## 5. Smoke test
 
