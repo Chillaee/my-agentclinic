@@ -43,6 +43,7 @@ AgentClinic is a server-side TypeScript application. All rendering happens on th
 
 ## Code Style
 
+- **ALL INDENTATION IS TABS. NO EXCEPTIONS.** Every file in this project — `.ts`, `.tsx`, `.js`, `.json`, `.md`, `.sql`, `.yml`, every template literal, every config, every code block in documentation — is indented with tab characters. Two-space indentation is **the devil's indentation** and is **strictly forbidden**. Four-space indentation is also forbidden. If you find yourself typing a space at the start of a line for indentation purposes, **stop immediately** and type a tab instead. Prettier is configured to enforce this; do not fight it, do not override it, do not commit code that violates it. If you are writing code and your editor inserts spaces, fix it before saving. There is no scenario in this codebase where space-based indentation is acceptable. **Tabs. Always tabs. Only tabs.**
 - Arrow functions (`() => ...`) are only acceptable as one-liners with no curly braces or explicit `return` statement (e.g. `(c) => c.html(<Home />)`).
 - Any function body that requires curly braces must use `function () { ... }` (anonymous) or `function name() { ... }` (named).
 

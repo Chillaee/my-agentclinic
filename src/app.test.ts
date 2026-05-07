@@ -1,5 +1,12 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeAll } from "vitest";
 import { app } from "./app.js";
+import { migrate } from "./db/migrate.js";
+import { seed } from "./db/seed.js";
+
+beforeAll(function () {
+	migrate();
+	seed();
+});
 
 describe("GET /", function () {
 	it("responds with 200", async function () {
@@ -49,5 +56,24 @@ describe("GET /", function () {
 		const res = await app.request("/");
 		const body = await res.text();
 		expect(body).toContain("<main");
+	});
+});
+
+describe("GET /agents", function () {
+	it("responds with 200", async function () {
+		const res = await app.request("/agents");
+		expect(res.status).toBe(200);
+	});
+
+	it("renders a table", async function () {
+		const res = await app.request("/agents");
+		const body = await res.text();
+		expect(body).toContain("<table");
+	});
+
+	it("includes at least one seeded agent name", async function () {
+		const res = await app.request("/agents");
+		const body = await res.text();
+		expect(body).toContain("Cogsworth-7");
 	});
 });
