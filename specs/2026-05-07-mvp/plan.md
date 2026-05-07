@@ -1,7 +1,7 @@
 ## Working model
 
 - Branch: `mvp` (already created from `main` at the start of this work).
-- One commit per phase. After each phase commit, run `npm test`, `npm run build`, and `npm run format`.
+- Two commits per phase: a feature commit (route, page, migration, seed, etc.) followed by a validation commit (tests and any validation-checklist updates). The feature lands first; validation lands on top to prove it works. After the validation commit, run `npm test`, `npm run build`, and `npm run format`.
 - Final PR merges `mvp` -> `main` with `--no-ff` once Phase 8 is green.
 
 ---
@@ -21,7 +21,9 @@
     - `GET /agents/:id` for a seeded agent -> 200; body contains the agent name and model type.
     - `GET /agents/:id` for a non-existent id -> 404.
     - `/agents` table contains an `<a href="/agents/...">` link for each agent.
-5. **Commit**: "Phase 4: agent detail page".
+5. **Commits**:
+    - Feature: "Phase 4: agent detail page" (steps 1-3).
+    - Validation: "Phase 4: agent detail tests" (step 4).
 
 ---
 
@@ -41,7 +43,9 @@
 5. **Tests**
     - `GET /ailments` -> 200; body contains a `<table>` and each seeded ailment name.
     - `GET /agents/:id` for an agent with seeded ailments shows at least one ailment name.
-6. **Commit**: "Phase 5: ailments catalog + agent linkage".
+6. **Commits**:
+    - Feature: "Phase 5: ailments catalog + agent linkage" (steps 1-4).
+    - Validation: "Phase 5: ailments tests" (step 5).
 
 ---
 
@@ -60,7 +64,9 @@
 5. **Tests**
     - `GET /therapies` -> 200; body contains each seeded therapy name.
     - `/ailments` body contains at least one therapy name in the recommended-therapies column.
-6. **Commit**: "Phase 6: therapies catalog + ailment mapping".
+6. **Commits**:
+    - Feature: "Phase 6: therapies catalog + ailment mapping" (steps 1-4).
+    - Validation: "Phase 6: therapies tests" (step 5).
 
 ---
 
@@ -91,7 +97,9 @@
     - `POST /agents/:id/appointments` with missing fields -> 400 (or 200 with re-rendered form) and inline error visible.
     - `POST` against a non-existent agent -> 404.
     - `GET /appointments/:id/confirmation` for a real appointment -> 200 with agent + therapist + scheduled time.
-8. **Commit**: "Phase 7: appointment booking".
+8. **Commits**:
+    - Feature: "Phase 7: appointment booking" (steps 1-6).
+    - Validation: "Phase 7: appointment booking tests" (step 7).
 
 ---
 
@@ -111,7 +119,9 @@
 4. **Tests**
     - `GET /dashboard` -> 200, contains all three count values (assert numerically against a fresh DB).
     - Body contains each seeded agent name and each seeded therapist name (sanity that joins worked).
-5. **Commit**: "Phase 8: staff dashboard".
+5. **Commits**:
+    - Feature: "Phase 8: staff dashboard" (steps 1-3).
+    - Validation: "Phase 8: staff dashboard tests" (step 4).
 
 ---
 
