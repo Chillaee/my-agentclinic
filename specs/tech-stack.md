@@ -45,6 +45,7 @@ AgentClinic is a server-side TypeScript application. All rendering happens on th
 
 - Arrow functions (`() => ...`) are only acceptable as one-liners with no curly braces or explicit `return` statement (e.g. `(c) => c.html(<Home />)`).
 - Any function body that requires curly braces must use `function () { ... }` (anonymous) or `function name() { ... }` (named).
+- SQL is indented with tabs, both in `.sql` files and inside template literals.
 
 ## What We Are Not Using
 
