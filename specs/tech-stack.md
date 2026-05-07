@@ -23,12 +23,12 @@ AgentClinic is a server-side TypeScript application. All rendering happens on th
 
 ## Data
 
-- **SQLite** (via `better-sqlite3`) for local development and early production — simple, embedded, no infrastructure
+- **SQLite** (via `better-sqlite3`) for local development and early production: simple, embedded, no infrastructure
 - Migrations via plain SQL files; no ORM to start
 
 ## Testing
 
-- **Vitest** — fast, TypeScript-native, compatible with the rest of the stack
+- **Vitest**: fast, TypeScript-native, compatible with the rest of the stack
 - Tests written from the start; each phase adds tests alongside new logic
 
 ## Tooling
@@ -43,12 +43,24 @@ AgentClinic is a server-side TypeScript application. All rendering happens on th
 
 ## Code Style
 
-- **ALL INDENTATION IS TABS. NO EXCEPTIONS.** Every file in this project — `.ts`, `.tsx`, `.js`, `.json`, `.md`, `.sql`, `.yml`, every template literal, every config, every code block in documentation — is indented with tab characters. Two-space indentation is **the devil's indentation** and is **strictly forbidden**. Four-space indentation is also forbidden. If you find yourself typing a space at the start of a line for indentation purposes, **stop immediately** and type a tab instead. Prettier is configured to enforce this; do not fight it, do not override it, do not commit code that violates it. If you are writing code and your editor inserts spaces, fix it before saving. There is no scenario in this codebase where space-based indentation is acceptable. **Tabs. Always tabs. Only tabs.**
+- **ALL INDENTATION IS TABS. NO EXCEPTIONS.** Every file in this project: `.ts`, `.tsx`, `.js`, `.json`, `.md`, `.sql`, `.yml`, every template literal, every config, every code block in documentation, these are all indented with tab characters. Two-space indentation is **the devil's indentation** and is **strictly forbidden**. Four-space indentation is also forbidden. If you find yourself typing a space at the start of a line for indentation purposes, **stop immediately** and type a tab instead. Prettier is configured to enforce this; do not fight it, do not override it, do not commit code that violates it. If you are writing code and your editor inserts spaces, fix it before saving. There is no scenario in this codebase where space-based indentation is acceptable. **Tabs. Always tabs. Only tabs.**
 - Arrow functions (`() => ...`) are only acceptable as one-liners with no curly braces or explicit `return` statement (e.g. `(c) => c.html(<Home />)`).
 - Any function body that requires curly braces must use `function () { ... }` (anonymous) or `function name() { ... }` (named).
 
+## Plain-text characters
+
+Agents suck, write normally. Stick to the punctuation and usage you'd find on a standard US keyboard layout. That means: no em-dashes. This applies to all docs, specs, and code comments.
+
+In practice that means:
+
+- A colon (`:`) for separators, e.g. `Phase 4: Agent Detail` (not an em-dash)
+- A hyphen (`-`) for numeric ranges like `1-3` (not an en-dash)
+- `->` for a right arrow (not `→`)
+- `<->` for a left-right arrow (not `↔`)
+- `>=` for greater-than-or-equal (not `≥`)
+
 ## What We Are Not Using
 
-- No React, Vue, or Svelte — server-side rendering keeps the stack simple
-- No ORM — SQL is sufficient at this scale
-- No Docker — not yet; that's a later phase concern
+- No React, Vue, or Svelte: server-side rendering keeps the stack simple
+- No ORM: SQL is sufficient at this scale
+- No Docker: not yet; that's a later phase concern
