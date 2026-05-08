@@ -26,6 +26,17 @@ AgentClinic is a server-side TypeScript application. All rendering happens on th
 - **SQLite** (via `better-sqlite3`) for local development and early production: simple, embedded, no infrastructure
 - Migrations via plain SQL files; no ORM to start
 
+### Database conventions
+
+Every table in the database, including junction tables, must include the following two columns:
+
+| Column        | Type                                      | Notes                                                       |
+| ------------- | ----------------------------------------- | ----------------------------------------------------------- |
+| `created_at`  | `TEXT NOT NULL DEFAULT (datetime('now'))` | ISO 8601 string; set automatically on insert                |
+| `modified_at` | `TEXT NOT NULL DEFAULT (datetime('now'))` | ISO 8601 string; application sets this explicitly on writes |
+
+SQLite has no automatic update trigger for `modified_at`; the application layer owns updating it on every write. New migrations that introduce a table without these columns should be rejected in review.
+
 ## Testing
 
 - **Vitest**: fast, TypeScript-native, compatible with the rest of the stack
