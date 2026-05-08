@@ -12,7 +12,9 @@ export type Agent = {
 function AgentRow(agent: Agent) {
 	return (
 		<tr key={agent.id}>
-			<td style={{ padding: "0.5rem" }}>{agent.name}</td>
+			<td style={{ padding: "0.5rem" }}>
+				<a href={`/agents/${agent.id}`}>{agent.name}</a>
+			</td>
 			<td style={{ padding: "0.5rem" }}>{agent.model_type}</td>
 			<td style={{ padding: "0.5rem" }}>{agent.status}</td>
 		</tr>
