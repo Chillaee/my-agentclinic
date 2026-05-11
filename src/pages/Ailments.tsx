@@ -8,16 +8,19 @@ export type Ailment = {
 	modified_at: string;
 };
 
-function AilmentRow(ailment: Ailment) {
+export type AilmentWithTherapies = Ailment & { therapies: string };
+
+function AilmentRow(ailment: AilmentWithTherapies) {
 	return (
 		<tr key={ailment.id}>
 			<td style={{ padding: "0.5rem" }}>{ailment.name}</td>
 			<td style={{ padding: "0.5rem" }}>{ailment.description}</td>
+			<td style={{ padding: "0.5rem" }}>{ailment.therapies}</td>
 		</tr>
 	);
 }
 
-export function Ailments({ ailments }: { ailments: Ailment[] }) {
+export function Ailments({ ailments }: { ailments: AilmentWithTherapies[] }) {
 	return (
 		<Layout>
 			<h1>Ailments</h1>
@@ -29,6 +32,9 @@ export function Ailments({ ailments }: { ailments: Ailment[] }) {
 						</th>
 						<th style={{ textAlign: "left", padding: "0.5rem" }}>
 							Description
+						</th>
+						<th style={{ textAlign: "left", padding: "0.5rem" }}>
+							Recommended therapies
 						</th>
 					</tr>
 				</thead>

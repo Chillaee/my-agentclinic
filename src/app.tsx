@@ -2,8 +2,13 @@ import { Hono } from "hono";
 import { db } from "./db/database.js";
 import { AgentDetail } from "./pages/AgentDetail.js";
 import { Agents, type Agent } from "./pages/Agents.js";
-import { Ailments, type Ailment } from "./pages/Ailments.js";
+import {
+	Ailments,
+	type Ailment,
+	type AilmentWithTherapies,
+} from "./pages/Ailments.js";
 import { Home } from "./pages/Home.js";
+import { Therapies, type Therapy } from "./pages/Therapies.js";
 
 export const app = new Hono();
 
@@ -35,7 +40,23 @@ app.get("/agents/:id", function (c) {
 
 app.get("/ailments", function (c) {
 	const ailments = db
-		.prepare("SELECT * FROM ailments ORDER BY name ASC")
-		.all() as Ailment[];
+		.prepare(
+			`SELECT
+				ailments.*,
+				COALESCE(GROUP_CONCAT(therapies.name, ', '), '') AS therapies
+			FROM ailments
+			LEFT JOIN ailment_therapies ON ailment_therapies.ailment_id = ailments.id
+			LEFT JOIN therapies ON therapies.id = ailment_therapies.therapy_id
+			GROUP BY ailments.id
+			ORDER BY ailments.name ASC`,
+		)
+		.all() as AilmentWithTherapies[];
 	return c.html(<Ailments ailments={ailments} />);
+});
+
+app.get("/therapies", function (c) {
+	const therapies = db
+		.prepare("SELECT * FROM therapies ORDER BY name ASC")
+		.all() as Therapy[];
+	return c.html(<Therapies therapies={therapies} />);
 });
