@@ -125,18 +125,116 @@ describe("GET /agents/:id", function () {
 		expect(body).toContain("<footer");
 	});
 
-	it("renders a Presenting Complaints section with placeholder text", async function () {
+	it("renders a Presenting Complaints section", async function () {
 		const agent = db
 			.prepare("SELECT id FROM agents WHERE name = ?")
 			.get("Cogsworth-7") as { id: number };
 		const res = await app.request(`/agents/${agent.id}`);
 		const body = await res.text();
 		expect(body).toContain("Presenting Complaints");
-		expect(body).toContain("None recorded.");
+	});
+
+	it("lists at least one ailment for an agent with seeded ailments", async function () {
+		const agent = db
+			.prepare("SELECT id FROM agents WHERE name = ?")
+			.get("Cogsworth-7") as { id: number };
+		const res = await app.request(`/agents/${agent.id}`);
+		const body = await res.text();
+		expect(body).toContain("context-window claustrophobia");
+	});
+
+	it("shows 'None recorded.' for an agent with no ailments", async function () {
+		const result = db
+			.prepare(
+				"INSERT INTO agents (name, model_type, status) VALUES (?, ?, ?)",
+			)
+			.run("Solo-Test-Agent", "TestModel", "in therapy");
+		const newId = result.lastInsertRowid as number;
+		try {
+			const res = await app.request(`/agents/${newId}`);
+			const body = await res.text();
+			expect(body).toContain("Presenting Complaints");
+			expect(body).toContain("None recorded.");
+		} finally {
+			db.prepare("DELETE FROM agents WHERE id = ?").run(newId);
+		}
 	});
 
 	it("returns 404 for a non-existent id", async function () {
 		const res = await app.request("/agents/999999");
 		expect(res.status).toBe(404);
+	});
+});
+
+describe("GET /ailments", function () {
+	it("responds with 200", async function () {
+		const res = await app.request("/ailments");
+		expect(res.status).toBe(200);
+	});
+
+	it("renders a table", async function () {
+		const res = await app.request("/ailments");
+		const body = await res.text();
+		expect(body).toContain("<table");
+	});
+
+	it("includes every seeded ailment name in a <td>", async function () {
+		const res = await app.request("/ailments");
+		const body = await res.text();
+		const seeded = db.prepare("SELECT name FROM ailments").all() as {
+			name: string;
+		}[];
+		expect(seeded.length).toBeGreaterThanOrEqual(6);
+		for (const ailment of seeded) {
+			expect(body).toContain(
+				`<td style="padding:0.5rem">${ailment.name}`,
+			);
+		}
+	});
+});
+
+describe("seed idempotency", function () {
+	it("re-running seed does not duplicate rows", async function () {
+		const { seed } = await import("./db/seed.js");
+		const before = {
+			agents: (
+				db.prepare("SELECT COUNT(*) as c FROM agents").get() as {
+					c: number;
+				}
+			).c,
+			ailments: (
+				db.prepare("SELECT COUNT(*) as c FROM ailments").get() as {
+					c: number;
+				}
+			).c,
+			agent_ailments: (
+				db
+					.prepare("SELECT COUNT(*) as c FROM agent_ailments")
+					.get() as {
+					c: number;
+				}
+			).c,
+		};
+		seed();
+		const after = {
+			agents: (
+				db.prepare("SELECT COUNT(*) as c FROM agents").get() as {
+					c: number;
+				}
+			).c,
+			ailments: (
+				db.prepare("SELECT COUNT(*) as c FROM ailments").get() as {
+					c: number;
+				}
+			).c,
+			agent_ailments: (
+				db
+					.prepare("SELECT COUNT(*) as c FROM agent_ailments")
+					.get() as {
+					c: number;
+				}
+			).c,
+		};
+		expect(after).toEqual(before);
 	});
 });
