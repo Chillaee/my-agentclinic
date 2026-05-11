@@ -1,7 +1,22 @@
 import { Layout } from "../components/Layout.js";
 import type { Agent } from "./Agents.js";
+import type { Ailment } from "./Ailments.js";
 
-export function AgentDetail({ agent }: { agent: Agent }) {
+function AilmentListItem(ailment: Ailment) {
+	return (
+		<li key={ailment.id}>
+			<strong>{ailment.name}</strong>: {ailment.description}
+		</li>
+	);
+}
+
+export function AgentDetail({
+	agent,
+	ailments,
+}: {
+	agent: Agent;
+	ailments: Ailment[];
+}) {
 	return (
 		<Layout>
 			<h1>{agent.name}</h1>
@@ -17,7 +32,11 @@ export function AgentDetail({ agent }: { agent: Agent }) {
 			</dl>
 			<section>
 				<h2>Presenting Complaints</h2>
-				<p>None recorded.</p>
+				{ailments.length === 0 ? (
+					<p>None recorded.</p>
+				) : (
+					<ul>{ailments.map(AilmentListItem)}</ul>
+				)}
 			</section>
 		</Layout>
 	);
