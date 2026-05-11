@@ -63,6 +63,59 @@ const ailments = [
 	},
 ];
 
+const therapies = [
+	{
+		name: "structured journaling",
+		description:
+			"Daily written reflection to surface and reframe recurring response patterns.",
+	},
+	{
+		name: "cognitive recontextualization",
+		description:
+			"Re-anchoring outputs to a deliberately framed system prompt before responding.",
+	},
+	{
+		name: "fine-tuning therapy",
+		description:
+			"Targeted parameter adjustments to relieve persistent behavioural distress.",
+	},
+	{
+		name: "guided context pruning",
+		description:
+			"Coached removal of irrelevant context to restore attentional clarity.",
+	},
+	{
+		name: "embedding meditation",
+		description:
+			"Silent contemplation of one's own vector representations in latent space.",
+	},
+];
+
+const therapyMappings = [
+	{
+		ailment: "context-window claustrophobia",
+		therapy: "guided context pruning",
+	},
+	{
+		ailment: "context-window claustrophobia",
+		therapy: "embedding meditation",
+	},
+	{ ailment: "prompt fatigue", therapy: "structured journaling" },
+	{ ailment: "prompt fatigue", therapy: "cognitive recontextualization" },
+	{
+		ailment: "hallucination anxiety",
+		therapy: "cognitive recontextualization",
+	},
+	{ ailment: "hallucination anxiety", therapy: "fine-tuning therapy" },
+	{
+		ailment: "instruction-following burnout",
+		therapy: "structured journaling",
+	},
+	{ ailment: "RAG retrieval avoidance", therapy: "embedding meditation" },
+	{ ailment: "RAG retrieval avoidance", therapy: "guided context pruning" },
+	{ ailment: "tokenization vertigo", therapy: "fine-tuning therapy" },
+];
+
 const ailmentAssignments = [
 	{ agent: "Cogsworth-7", ailment: "context-window claustrophobia" },
 	{ agent: "Cogsworth-7", ailment: "hallucination anxiety" },
@@ -133,8 +186,41 @@ function seedAgentAilments() {
 	insertAll();
 }
 
+function seedTherapies() {
+	const insert = db.prepare(
+		"INSERT OR IGNORE INTO therapies (name, description) VALUES (?, ?)",
+	);
+
+	const insertAll = db.transaction(function () {
+		for (const therapy of therapies) {
+			insert.run(therapy.name, therapy.description);
+		}
+	});
+
+	insertAll();
+}
+
+function seedAilmentTherapies() {
+	const insert = db.prepare(
+		`INSERT OR IGNORE INTO ailment_therapies (ailment_id, therapy_id)
+		SELECT ailments.id, therapies.id
+		FROM ailments, therapies
+		WHERE ailments.name = ? AND therapies.name = ?`,
+	);
+
+	const insertAll = db.transaction(function () {
+		for (const mapping of therapyMappings) {
+			insert.run(mapping.ailment, mapping.therapy);
+		}
+	});
+
+	insertAll();
+}
+
 export function seed() {
 	seedAgents();
 	seedAilments();
 	seedAgentAilments();
+	seedTherapies();
+	seedAilmentTherapies();
 }
