@@ -191,50 +191,97 @@ describe("GET /ailments", function () {
 			);
 		}
 	});
+
+	it("includes a 'Recommended therapies' column header", async function () {
+		const res = await app.request("/ailments");
+		const body = await res.text();
+		expect(body).toContain("Recommended therapies");
+	});
+
+	it("renders at least one therapy name in the recommended-therapies column", async function () {
+		const res = await app.request("/ailments");
+		const body = await res.text();
+		const therapy = db
+			.prepare(
+				`SELECT therapies.name FROM therapies
+				JOIN ailment_therapies ON ailment_therapies.therapy_id = therapies.id
+				LIMIT 1`,
+			)
+			.get() as { name: string };
+		expect(body).toContain(therapy.name);
+	});
+
+	it("renders an empty cell for an ailment with no mapped therapies", async function () {
+		const result = db
+			.prepare("INSERT INTO ailments (name, description) VALUES (?, ?)")
+			.run("orphan-ailment", "A condition with no recommended therapy.");
+		const newId = result.lastInsertRowid as number;
+		try {
+			const res = await app.request("/ailments");
+			expect(res.status).toBe(200);
+			const body = await res.text();
+			expect(body).toContain("orphan-ailment");
+			expect(body).toContain(
+				`<td style="padding:0.5rem">A condition with no recommended therapy.</td><td style="padding:0.5rem"></td>`,
+			);
+		} finally {
+			db.prepare("DELETE FROM ailments WHERE id = ?").run(newId);
+		}
+	});
+});
+
+describe("GET /therapies", function () {
+	it("responds with 200", async function () {
+		const res = await app.request("/therapies");
+		expect(res.status).toBe(200);
+	});
+
+	it("renders a table", async function () {
+		const res = await app.request("/therapies");
+		const body = await res.text();
+		expect(body).toContain("<table");
+	});
+
+	it("includes every seeded therapy name in a <td>", async function () {
+		const res = await app.request("/therapies");
+		const body = await res.text();
+		const seeded = db.prepare("SELECT name FROM therapies").all() as {
+			name: string;
+		}[];
+		expect(seeded.length).toBeGreaterThanOrEqual(5);
+		for (const therapy of seeded) {
+			expect(body).toContain(
+				`<td style="padding:0.5rem">${therapy.name}`,
+			);
+		}
+	});
 });
 
 describe("seed idempotency", function () {
-	it("re-running seed does not duplicate rows", async function () {
-		const { seed } = await import("./db/seed.js");
-		const before = {
-			agents: (
-				db.prepare("SELECT COUNT(*) as c FROM agents").get() as {
+	const tables = [
+		"agents",
+		"ailments",
+		"agent_ailments",
+		"therapies",
+		"ailment_therapies",
+	];
+
+	function rowCounts() {
+		const result: Record<string, number> = {};
+		for (const table of tables) {
+			result[table] = (
+				db.prepare(`SELECT COUNT(*) as c FROM ${table}`).get() as {
 					c: number;
 				}
-			).c,
-			ailments: (
-				db.prepare("SELECT COUNT(*) as c FROM ailments").get() as {
-					c: number;
-				}
-			).c,
-			agent_ailments: (
-				db
-					.prepare("SELECT COUNT(*) as c FROM agent_ailments")
-					.get() as {
-					c: number;
-				}
-			).c,
-		};
+			).c;
+		}
+		return result;
+	}
+
+	it("re-running seed does not duplicate rows", function () {
+		const before = rowCounts();
 		seed();
-		const after = {
-			agents: (
-				db.prepare("SELECT COUNT(*) as c FROM agents").get() as {
-					c: number;
-				}
-			).c,
-			ailments: (
-				db.prepare("SELECT COUNT(*) as c FROM ailments").get() as {
-					c: number;
-				}
-			).c,
-			agent_ailments: (
-				db
-					.prepare("SELECT COUNT(*) as c FROM agent_ailments")
-					.get() as {
-					c: number;
-				}
-			).c,
-		};
+		const after = rowCounts();
 		expect(after).toEqual(before);
 	});
 });
