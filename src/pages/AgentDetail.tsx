@@ -1,6 +1,11 @@
+import {
+	AppointmentForm,
+	type AppointmentFormValues,
+} from "../components/AppointmentForm.js";
 import { Layout } from "../components/Layout.js";
 import type { Agent } from "./Agents.js";
 import type { Ailment } from "./Ailments.js";
+import type { Therapist } from "./Staff.js";
 
 function AilmentListItem(ailment: Ailment) {
 	return (
@@ -13,9 +18,15 @@ function AilmentListItem(ailment: Ailment) {
 export function AgentDetail({
 	agent,
 	ailments,
+	therapists,
+	error,
+	formValues,
 }: {
 	agent: Agent;
 	ailments: Ailment[];
+	therapists: Therapist[];
+	error?: string;
+	formValues?: AppointmentFormValues;
 }) {
 	return (
 		<Layout>
@@ -38,6 +49,12 @@ export function AgentDetail({
 					<ul>{ailments.map(AilmentListItem)}</ul>
 				)}
 			</section>
+			<AppointmentForm
+				agentId={agent.id}
+				therapists={therapists}
+				error={error}
+				values={formValues}
+			/>
 		</Layout>
 	);
 }

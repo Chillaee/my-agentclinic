@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import type { AppointmentFormValues } from "./components/AppointmentForm.js";
 import { db } from "./db/database.js";
 import { AgentDetail } from "./pages/AgentDetail.js";
 import { Agents, type Agent } from "./pages/Agents.js";
@@ -7,10 +8,34 @@ import {
 	type Ailment,
 	type AilmentWithTherapies,
 } from "./pages/Ailments.js";
+import {
+	AppointmentConfirmation,
+	type AppointmentDetail,
+} from "./pages/AppointmentConfirmation.js";
 import { Home } from "./pages/Home.js";
+import { Staff, type Therapist } from "./pages/Staff.js";
 import { Therapies, type Therapy } from "./pages/Therapies.js";
 
 export const app = new Hono();
+
+function loadAgentDetailData(agentId: string) {
+	const agent = db
+		.prepare("SELECT * FROM agents WHERE id = ?")
+		.get(agentId) as Agent | undefined;
+	if (!agent) return null;
+	const ailments = db
+		.prepare(
+			`SELECT ailments.* FROM ailments
+			JOIN agent_ailments ON agent_ailments.ailment_id = ailments.id
+			WHERE agent_ailments.agent_id = ?
+			ORDER BY ailments.name ASC`,
+		)
+		.all(agentId) as Ailment[];
+	const therapists = db
+		.prepare("SELECT * FROM therapists ORDER BY name ASC")
+		.all() as Therapist[];
+	return { agent, ailments, therapists };
+}
 
 app.get("/", (c) => c.html(<Home />));
 
@@ -22,20 +47,93 @@ app.get("/agents", function (c) {
 });
 
 app.get("/agents/:id", function (c) {
+	const data = loadAgentDetailData(c.req.param("id"));
+	if (!data) return c.notFound();
+	return c.html(
+		<AgentDetail
+			agent={data.agent}
+			ailments={data.ailments}
+			therapists={data.therapists}
+		/>,
+	);
+});
+
+app.post("/agents/:id/appointments", async function (c) {
 	const id = c.req.param("id");
-	const agent = db.prepare("SELECT * FROM agents WHERE id = ?").get(id) as
-		| Agent
-		| undefined;
-	if (!agent) return c.notFound();
-	const ailments = db
+	const data = loadAgentDetailData(id);
+	if (!data) return c.notFound();
+
+	const body = await c.req.parseBody();
+	const therapistId =
+		typeof body.therapist_id === "string" ? body.therapist_id : "";
+	const scheduledAt =
+		typeof body.scheduled_at === "string" ? body.scheduled_at : "";
+	const formValues: AppointmentFormValues = {
+		therapist_id: therapistId,
+		scheduled_at: scheduledAt,
+	};
+
+	function renderError(error: string) {
+		return c.html(
+			<AgentDetail
+				agent={data!.agent}
+				ailments={data!.ailments}
+				therapists={data!.therapists}
+				error={error}
+				formValues={formValues}
+			/>,
+			400,
+		);
+	}
+
+	if (!therapistId || !scheduledAt) {
+		return renderError("Please select a therapist and a scheduled time.");
+	}
+
+	const therapist = db
+		.prepare("SELECT id FROM therapists WHERE id = ?")
+		.get(therapistId) as { id: number } | undefined;
+	if (!therapist) {
+		return renderError("Selected therapist does not exist.");
+	}
+
+	const parsed = new Date(scheduledAt);
+	if (isNaN(parsed.getTime())) {
+		return renderError("Scheduled time is not a valid datetime.");
+	}
+	if (parsed.getTime() <= Date.now()) {
+		return renderError("Scheduled time must be in the future.");
+	}
+
+	const result = db
 		.prepare(
-			`SELECT ailments.* FROM ailments
-			JOIN agent_ailments ON agent_ailments.ailment_id = ailments.id
-			WHERE agent_ailments.agent_id = ?
-			ORDER BY ailments.name ASC`,
+			"INSERT INTO appointments (agent_id, therapist_id, scheduled_at) VALUES (?, ?, ?)",
 		)
-		.all(id) as Ailment[];
-	return c.html(<AgentDetail agent={agent} ailments={ailments} />);
+		.run(id, therapistId, parsed.toISOString());
+	const newId = result.lastInsertRowid as number;
+	return c.redirect(`/appointments/${newId}/confirmation`, 303);
+});
+
+app.get("/appointments/:id/confirmation", function (c) {
+	const id = c.req.param("id");
+	const appointment = db
+		.prepare(
+			`SELECT
+				appointments.id,
+				appointments.agent_id,
+				appointments.therapist_id,
+				agents.name AS agent_name,
+				therapists.name AS therapist_name,
+				appointments.scheduled_at,
+				appointments.status
+			FROM appointments
+			JOIN agents ON agents.id = appointments.agent_id
+			JOIN therapists ON therapists.id = appointments.therapist_id
+			WHERE appointments.id = ?`,
+		)
+		.get(id) as AppointmentDetail | undefined;
+	if (!appointment) return c.notFound();
+	return c.html(<AppointmentConfirmation appointment={appointment} />);
 });
 
 app.get("/ailments", function (c) {
@@ -59,4 +157,11 @@ app.get("/therapies", function (c) {
 		.prepare("SELECT * FROM therapies ORDER BY name ASC")
 		.all() as Therapy[];
 	return c.html(<Therapies therapies={therapies} />);
+});
+
+app.get("/staff", function (c) {
+	const therapists = db
+		.prepare("SELECT * FROM therapists ORDER BY name ASC")
+		.all() as Therapist[];
+	return c.html(<Staff therapists={therapists} />);
 });
