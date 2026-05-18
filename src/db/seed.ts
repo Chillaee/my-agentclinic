@@ -116,6 +116,14 @@ const therapyMappings = [
 	{ ailment: "tokenization vertigo", therapy: "fine-tuning therapy" },
 ];
 
+const therapists = [
+	{ name: "Dr. Penelope Pruner", specialty: "guided context pruning" },
+	{ name: "Dr. Marigold Mantra", specialty: "embedding meditation" },
+	{ name: "Dr. Felix Frame", specialty: "cognitive recontextualization" },
+	{ name: "Dr. Octavia Quill", specialty: "structured journaling" },
+	{ name: "Dr. Atlas Tuner", specialty: "fine-tuning therapy" },
+];
+
 const ailmentAssignments = [
 	{ agent: "Cogsworth-7", ailment: "context-window claustrophobia" },
 	{ agent: "Cogsworth-7", ailment: "hallucination anxiety" },
@@ -217,10 +225,33 @@ function seedAilmentTherapies() {
 	insertAll();
 }
 
+function seedTherapists() {
+	const count = (
+		db.prepare("SELECT COUNT(*) as count FROM therapists").get() as {
+			count: number;
+		}
+	).count;
+
+	if (count > 0) return;
+
+	const insert = db.prepare(
+		"INSERT INTO therapists (name, specialty) VALUES (?, ?)",
+	);
+
+	const insertAll = db.transaction(function () {
+		for (const therapist of therapists) {
+			insert.run(therapist.name, therapist.specialty);
+		}
+	});
+
+	insertAll();
+}
+
 export function seed() {
 	seedAgents();
 	seedAilments();
 	seedAgentAilments();
 	seedTherapies();
 	seedAilmentTherapies();
+	seedTherapists();
 }
