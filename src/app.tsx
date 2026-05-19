@@ -12,6 +12,7 @@ import {
 	AppointmentConfirmation,
 	type AppointmentDetail,
 } from "./pages/AppointmentConfirmation.js";
+import { Dashboard, type DashboardAppointment } from "./pages/Dashboard.js";
 import { Home } from "./pages/Home.js";
 import { Staff, type Therapist } from "./pages/Staff.js";
 import { Therapies, type Therapy } from "./pages/Therapies.js";
@@ -164,4 +165,59 @@ app.get("/staff", function (c) {
 		.prepare("SELECT * FROM therapists ORDER BY name ASC")
 		.all() as Therapist[];
 	return c.html(<Staff therapists={therapists} />);
+});
+
+app.get("/dashboard", function (c) {
+	const agentsCount = (
+		db.prepare("SELECT COUNT(*) as c FROM agents").get() as { c: number }
+	).c;
+	const scheduledAppointmentsCount = (
+		db
+			.prepare(
+				"SELECT COUNT(*) as c FROM appointments WHERE status = 'scheduled'",
+			)
+			.get() as { c: number }
+	).c;
+	const ailmentsInFlightCount = (
+		db
+			.prepare(
+				`SELECT COUNT(*) as c FROM agent_ailments aa
+				JOIN agents a ON a.id = aa.agent_id
+				WHERE a.status = 'in therapy'`,
+			)
+			.get() as { c: number }
+	).c;
+	const agents = db
+		.prepare("SELECT * FROM agents ORDER BY name ASC")
+		.all() as Agent[];
+	const appointments = db
+		.prepare(
+			`SELECT
+				appointments.id,
+				appointments.agent_id,
+				agents.name AS agent_name,
+				therapists.name AS therapist_name,
+				appointments.scheduled_at,
+				appointments.status
+			FROM appointments
+			JOIN agents ON agents.id = appointments.agent_id
+			JOIN therapists ON therapists.id = appointments.therapist_id
+			ORDER BY appointments.scheduled_at ASC`,
+		)
+		.all() as DashboardAppointment[];
+	const therapists = db
+		.prepare("SELECT * FROM therapists ORDER BY name ASC")
+		.all() as Therapist[];
+	return c.html(
+		<Dashboard
+			counts={{
+				agents: agentsCount,
+				scheduledAppointments: scheduledAppointmentsCount,
+				ailmentsInFlight: ailmentsInFlightCount,
+			}}
+			agents={agents}
+			appointments={appointments}
+			therapists={therapists}
+		/>,
+	);
 });

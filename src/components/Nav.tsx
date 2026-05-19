@@ -35,6 +35,12 @@ export function Nav() {
 			>
 				Staff
 			</a>
+			<a
+				href="/dashboard"
+				style={{ color: "#374151", textDecoration: "none" }}
+			>
+				Dashboard
+			</a>
 		</nav>
 	);
 }
