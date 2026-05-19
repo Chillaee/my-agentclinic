@@ -497,6 +497,126 @@ describe("GET /appointments/:id/confirmation", function () {
 	});
 });
 
+describe("GET /dashboard", function () {
+	function scalar(sql: string) {
+		return (db.prepare(sql).get() as { c: number }).c;
+	}
+
+	it("responds with 200", async function () {
+		const res = await app.request("/dashboard");
+		expect(res.status).toBe(200);
+	});
+
+	it("renders three stat cards with the matching DB counts", async function () {
+		const res = await app.request("/dashboard");
+		const body = await res.text();
+		const agentsCount = scalar("SELECT COUNT(*) as c FROM agents");
+		const scheduledCount = scalar(
+			"SELECT COUNT(*) as c FROM appointments WHERE status = 'scheduled'",
+		);
+		const ailmentsInFlight = scalar(
+			`SELECT COUNT(*) as c FROM agent_ailments aa
+			JOIN agents a ON a.id = aa.agent_id
+			WHERE a.status = 'in therapy'`,
+		);
+		expect(body).toContain("Agents");
+		expect(body).toContain("Scheduled appointments");
+		expect(body).toContain("Ailments in-flight");
+		expect(body).toContain(`>${agentsCount}<`);
+		expect(body).toContain(`>${scheduledCount}<`);
+		expect(body).toContain(`>${ailmentsInFlight}<`);
+	});
+
+	it("renders each seeded agent name with a link to /agents/:id", async function () {
+		const res = await app.request("/dashboard");
+		const body = await res.text();
+		const agents = db.prepare("SELECT id, name FROM agents").all() as {
+			id: number;
+			name: string;
+		}[];
+		for (const agent of agents) {
+			expect(body).toContain(agent.name);
+			expect(body).toContain(`href="/agents/${agent.id}"`);
+		}
+	});
+
+	it("renders each seeded therapist name", async function () {
+		const res = await app.request("/dashboard");
+		const body = await res.text();
+		const therapists = db.prepare("SELECT name FROM therapists").all() as {
+			name: string;
+		}[];
+		for (const therapist of therapists) {
+			expect(body).toContain(therapist.name);
+		}
+	});
+
+	it("renders appointments joined with agent and therapist names, each linking to its confirmation page", async function () {
+		const agent = db
+			.prepare("SELECT id, name FROM agents WHERE name = ?")
+			.get("Cogsworth-7") as { id: number; name: string };
+		const therapist = db
+			.prepare("SELECT id, name FROM therapists ORDER BY id LIMIT 1")
+			.get() as { id: number; name: string };
+		const scheduledAt = new Date(
+			Date.now() + 7 * 24 * 60 * 60 * 1000,
+		).toISOString();
+		const result = db
+			.prepare(
+				"INSERT INTO appointments (agent_id, therapist_id, scheduled_at) VALUES (?, ?, ?)",
+			)
+			.run(agent.id, therapist.id, scheduledAt);
+		const newId = result.lastInsertRowid as number;
+		try {
+			const res = await app.request("/dashboard");
+			expect(res.status).toBe(200);
+			const body = await res.text();
+			expect(body).toContain(
+				`href="/appointments/${newId}/confirmation"`,
+			);
+			expect(body).toContain(agent.name);
+			expect(body).toContain(therapist.name);
+			expect(body).toContain(scheduledAt);
+		} finally {
+			db.prepare("DELETE FROM appointments WHERE id = ?").run(newId);
+		}
+	});
+
+	it("scheduled-appointments count increments after a booking", async function () {
+		const before = scalar(
+			"SELECT COUNT(*) as c FROM appointments WHERE status = 'scheduled'",
+		);
+		const agent = db
+			.prepare("SELECT id FROM agents WHERE name = ?")
+			.get("Cogsworth-7") as { id: number };
+		const therapist = db
+			.prepare("SELECT id FROM therapists ORDER BY id LIMIT 1")
+			.get() as { id: number };
+		const scheduledAt = new Date(
+			Date.now() + 7 * 24 * 60 * 60 * 1000,
+		).toISOString();
+		const result = db
+			.prepare(
+				"INSERT INTO appointments (agent_id, therapist_id, scheduled_at) VALUES (?, ?, ?)",
+			)
+			.run(agent.id, therapist.id, scheduledAt);
+		const newId = result.lastInsertRowid as number;
+		try {
+			const res = await app.request("/dashboard");
+			const body = await res.text();
+			expect(body).toContain(`>${before + 1}<`);
+		} finally {
+			db.prepare("DELETE FROM appointments WHERE id = ?").run(newId);
+		}
+	});
+
+	it("nav contains a Dashboard link", async function () {
+		const res = await app.request("/");
+		const body = await res.text();
+		expect(body).toContain('href="/dashboard"');
+	});
+});
+
 describe("seed idempotency", function () {
 	const tables = [
 		"agents",
