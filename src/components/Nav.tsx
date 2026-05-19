@@ -29,6 +29,18 @@ export function Nav() {
 			>
 				Therapies
 			</a>
+			<a
+				href="/staff"
+				style={{ color: "#374151", textDecoration: "none" }}
+			>
+				Staff
+			</a>
+			<a
+				href="/dashboard"
+				style={{ color: "#374151", textDecoration: "none" }}
+			>
+				Dashboard
+			</a>
 		</nav>
 	);
 }
